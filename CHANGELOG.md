@@ -1,3 +1,9 @@
+## 2.1.1
+
+* Fixed Swift Package Manager resolution by making the iOS package target Swift-only.
+* Added the FlutterFramework Swift package dependency required by Flutter 3.41+.
+* Restored CocoaPods support with a podspec that points at the shared Swift source.
+
 ## 2.1.0
 
 * Migrated to Swift Package Manager, removed CocoaPods support

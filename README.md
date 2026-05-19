@@ -2,12 +2,13 @@
 
 A Flutter plugin for displaying the iOS 14+ App Tracking Transparency authorization dialog and requesting permission to collect user data. Essential for ad networks like AdMob to function efficiently on iOS 14+ devices.
 
-Supports **Swift Package Manager**.
+Supports **Swift Package Manager** and CocoaPods.
 
 ## Features
 
 - **iOS 14.0+ Support** — Presents the native app-tracking authorization request dialog.
 - **Swift Package Manager** — Modern dependency management support for iOS.
+- **CocoaPods** — Compatibility for projects that have not migrated to Swift Package Manager yet.
 - **IDFA Access** — Retrieve the advertising identifier after user authorization.
 - **Authorization Status** — Check current tracking authorization status before requesting.
 - **AdMob Ready** — Designed to work seamlessly with Google Mobile Ads SDK.
@@ -23,7 +24,7 @@ dependencies:
 
 ### Swift Package Manager
 
-This plugin supports **Swift Package Manager**. Ensure your iOS project is configured to use SPM and add the plugin dependency accordingly.
+This plugin supports **Swift Package Manager** and CocoaPods. Flutter will use the dependency manager configured for your iOS project.
 
 ## Usage
 

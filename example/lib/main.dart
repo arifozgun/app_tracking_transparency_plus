@@ -1,4 +1,4 @@
-import 'package:app_tracking_transparency/app_tracking_transparency_plus.dart';
+import 'package:app_tracking_transparency_plus/app_tracking_transparency_plus.dart';
 import 'package:flutter/material.dart';
 
 void main() {
