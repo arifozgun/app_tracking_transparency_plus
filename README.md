@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
-      final status = await AppTrackingTransparency.requestTrackingAuthorization();
+      final status = await AppTrackingTransparencyPlus.requestTrackingAuthorization();
     });
   }
 }
@@ -61,14 +61,14 @@ class _MyAppState extends State<MyApp> {
 Google recommends showing an explainer message before the system dialog:
 
 ```dart
-if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+if (await AppTrackingTransparencyPlus.trackingAuthorizationStatus ==
     TrackingStatus.notDetermined) {
   // Show a custom explainer dialog before the system dialog
   await showCustomTrackingDialog(context);
   // Wait for dialog popping animation
   await Future.delayed(const Duration(milliseconds: 200));
   // Request system's tracking authorization dialog
-  await AppTrackingTransparency.requestTrackingAuthorization();
+  await AppTrackingTransparencyPlus.requestTrackingAuthorization();
 }
 ```
 
@@ -77,7 +77,7 @@ The explainer dialog must not contain a "Decide later" button. It should contain
 ### Get Advertising Identifier
 
 ```dart
-final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
+final uuid = await AppTrackingTransparencyPlus.getAdvertisingIdentifier();
 ```
 
 Until a user grants authorization, the returned UUID will be all zeros: `00000000-0000-0000-0000-000000000000`. Also note, the `advertisingIdentifier` will be all zeros in the Simulator, regardless of the tracking authorization status.

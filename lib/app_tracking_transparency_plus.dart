@@ -19,8 +19,9 @@ enum TrackingStatus {
 }
 
 class AppTrackingTransparencyPlus {
-  static const MethodChannel _channel =
-      const MethodChannel('app_tracking_transparency');
+  static const MethodChannel _channel = const MethodChannel(
+    'app_tracking_transparency',
+  );
 
   /// Get tracking authorization status without showing a dialog.
   ///
@@ -29,22 +30,23 @@ class AppTrackingTransparencyPlus {
   ///
   /// ```dart
   /// // If the system can show an authorization request dialog
-  /// if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+  /// if (await AppTrackingTransparencyPlus.trackingAuthorizationStatus ==
   ///     TrackingStatus.notDetermined) {
   ///   // Show a custom explainer dialog before the system dialog
   ///   await showCustomTrackingDialog(context);
   ///   // Wait for dialog popping animation
   ///   await Future.delayed(const Duration(milliseconds: 200));
   ///   // Request system's tracking authorization dialog
-  ///   await AppTrackingTransparency.requestTrackingAuthorization();
+  ///   await AppTrackingTransparencyPlus.requestTrackingAuthorization();
   /// }
   /// ```
   ///
   /// returns TrackingStatus.notSupported on Android
   static Future<TrackingStatus> get trackingAuthorizationStatus async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final int status =
-          (await _channel.invokeMethod<int>('getTrackingAuthorizationStatus'))!;
+      final int status = (await _channel.invokeMethod<int>(
+        'getTrackingAuthorizationStatus',
+      ))!;
       return TrackingStatus.values[status];
     }
     return TrackingStatus.notSupported;
@@ -55,14 +57,15 @@ class AppTrackingTransparencyPlus {
   /// as you want but it will display the dialog only once after the user mades his decision.
   ///
   /// ```dart
-  /// final status = await AppTrackingTransparency.requestTrackingAuthorization();
+  /// final status = await AppTrackingTransparencyPlus.requestTrackingAuthorization();
   /// ```
   ///
   /// returns TrackingStatus.notSupported on Android
   static Future<TrackingStatus> requestTrackingAuthorization() async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final int status =
-          (await _channel.invokeMethod<int>('requestTrackingAuthorization'))!;
+      final int status = (await _channel.invokeMethod<int>(
+        'requestTrackingAuthorization',
+      ))!;
       return TrackingStatus.values[status];
     }
     return TrackingStatus.notSupported;
@@ -70,13 +73,14 @@ class AppTrackingTransparencyPlus {
 
   /// Call this function to get advertising identifier (ie tracking data).
   /// ```dart
-  /// final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
+  /// final uuid = await AppTrackingTransparencyPlus.getAdvertisingIdentifier();
   /// ```
   /// returns empty string on Android
   static Future<String> getAdvertisingIdentifier() async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final String uuid =
-          (await _channel.invokeMethod<String>('getAdvertisingIdentifier'))!;
+      final String uuid = (await _channel.invokeMethod<String>(
+        'getAdvertisingIdentifier',
+      ))!;
       return uuid;
     }
     return "";
