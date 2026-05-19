@@ -1,73 +1,66 @@
+# App Tracking Transparency Plus
 
-# app_tracking_transparency_plus
-
-[![pub package](https://img.shields.io/pub/v/app_tracking_transparency_plus.svg)](https://pub.dev/packages/app_tracking_transparency_plus)
-
-This Flutter plugin allows you to display iOS 14+ tracking authorization dialog and request permission to collect data. Collected data is crucial for ad networks (ie AdMob) to work efficiently on iOS 14+ devices.
+A Flutter plugin for displaying the iOS 14+ App Tracking Transparency authorization dialog and requesting permission to collect user data. Essential for ad networks like AdMob to function efficiently on iOS 14+ devices.
 
 Supports **Swift Package Manager**.
 
-## Introduction
+## Features
 
-Starting in iOS 14.0, the App Tracking Transparency framework is available so we can present the app-tracking authorization request to the end user.
+- **iOS 14.0+ Support** — Presents the native app-tracking authorization request dialog.
+- **Swift Package Manager** — Modern dependency management support for iOS.
+- **IDFA Access** — Retrieve the advertising identifier after user authorization.
+- **Authorization Status** — Check current tracking authorization status before requesting.
+- **AdMob Ready** — Designed to work seamlessly with Google Mobile Ads SDK.
 
-Starting in iOS 14.5, IDFA will be unavailable until an app calls the App Tracking Transparency framework to present the app-tracking authorization request to the end user. If an app does not present this request, the IDFA will automatically be zeroed out which may lead to a significant loss in ad revenue.
+## Installation
 
-On iOS >=14.0 <14.5, tracking authorization request dialog isn't required in order to get IDFA. Keep in mind that, in those iOS versions, if you ask for it and the user rejects it you will lose access to IDFA ([see tests](https://github.com/deniza/app_tracking_transparency/pull/6#issuecomment-808964367)).
+Add the package to your `pubspec.yaml`:
 
-This plugin lets you display App Tracking Transparency authorization request and ask for permission.
+```yaml
+dependencies:
+  app_tracking_transparency_plus: ^<latest_version>
+```
 
-<div align="left">
-    <img src="https://github.com/deniza/app_tracking_transparency/raw/master/images/dialog.png">
-</div>
+### Swift Package Manager
+
+This plugin supports **Swift Package Manager**. Ensure your iOS project is configured to use SPM and add the plugin dependency accordingly.
 
 ## Usage
 
-#### Step 1:
-Make sure you update Info.plist file located in ios/Runner directory and add the **NSUserTrackingUsageDescription** key with a custom message describing your usage.
+### Step 1: Update Info.plist
+
+Add the `NSUserTrackingUsageDescription` key to your `ios/Runner/Info.plist`:
+
 ```xml
 <key>NSUserTrackingUsageDescription</key>
 <string>This identifier will be used to deliver personalized ads to you.</string>
 ```
-#### Step 2:
-Google recommends that you should be using Google Mobile Ads SDK 7.64.0 or higher. The Google Mobile Ads SDK supports conversion tracking using Apple's SKAdNetwork, which means Google is able to attribute an app install even when IDFA is unavailable. **This is a crucial step if you want to maximize your ad revenue when IDFA is not available.** To enable this functionality, you will need to update the SKAdNetworkItems key with an additional dictionary in your Info.plist, [check them here](https://developers.google.com/admob/ios/ios14#skadnetwork).
 
-## Example
-In this example, the tracking authorization dialog is requested from the Home widget of the application. You can initiate this request from any StatefulWidget in your app.
-``` dart
-// Import package
+### Step 2: Configure SKAdNetwork (Recommended)
+
+Google recommends using Google Mobile Ads SDK 7.64.0 or higher, which supports SKAdNetwork for conversion tracking even when IDFA is unavailable. Update the `SKAdNetworkItems` key in your `Info.plist`. [See Google's guide for details](https://developers.google.com/admob/ios/ios14#skadnetwork).
+
+### Basic Example
+
+```dart
 import 'package:app_tracking_transparency_plus/app_tracking_transparency_plus.dart';
 
-void main() {
-    runApp(MyApp());
-}
-
-class MyApp extends StatefulWidget {
-    @override _MyAppState createState() => _MyAppState();
-}
-
 class _MyAppState extends State<MyApp> {
-    @override
-    void  initState() {
-        super.initState();
-        // Show tracking authorization dialog and ask for permission
-        WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async { 
-            final status = await AppTrackingTransparency.requestTrackingAuthorization();
-        });     
-    }
-
-    @override
-    Widget build(BuildContext context) {
-        ...
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) async {
+      final status = await AppTrackingTransparency.requestTrackingAuthorization();
+    });
+  }
 }
-
-
 ```
 
-Google (admob) recommends implementing an explainer message that appears to users immediately before the consent dialogue. For additional info on this topic please refer to this article: https://support.google.com/admob/answer/9997589?hl=en
+### Recommended: Explainer Dialog
+
+Google recommends showing an explainer message before the system dialog:
+
 ```dart
-// If the system can show an authorization request dialog
 if (await AppTrackingTransparency.trackingAuthorizationStatus ==
     TrackingStatus.notDetermined) {
   // Show a custom explainer dialog before the system dialog
@@ -79,12 +72,32 @@ if (await AppTrackingTransparency.trackingAuthorizationStatus ==
 }
 ```
 
-The explainer dialog must not contain a "Decide later" button. It should contain only a "Continue" button and the system dialog must be shown after the explainer dialog. [See this issue for details](https://github.com/deniza/app_tracking_transparency/issues/27).
+The explainer dialog must not contain a "Decide later" button. It should contain only a "Continue" button, and the system dialog must be shown after the explainer dialog. [See this issue for details](https://github.com/deniza/app_tracking_transparency/issues/27).
 
-You can also get advertising identifier after authorization. Until a user grants authorization, the UUID returned will be all zeros: 00000000-0000-0000-0000-000000000000. Also note, the advertisingIdentifier will be all zeros in the Simulator, regardless of the tracking authorization status.
+### Get Advertising Identifier
+
 ```dart
 final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
-``` 
+```
+
+Until a user grants authorization, the returned UUID will be all zeros: `00000000-0000-0000-0000-000000000000`. Also note, the `advertisingIdentifier` will be all zeros in the Simulator, regardless of the tracking authorization status.
+
+## API Reference
+
+| Method / Property | Description |
+|---|---|
+| `requestTrackingAuthorization()` | Displays the tracking authorization dialog and returns the user's decision. |
+| `trackingAuthorizationStatus` | Returns the current `TrackingStatus` without showing a dialog. |
+| `getAdvertisingIdentifier()` | Returns the advertising identifier (IDFA), or zeros if unauthorized. |
+
+### TrackingStatus
+
+| Value | Description |
+|---|---|
+| `notDetermined` | The user has not yet been asked for tracking authorization. |
+| `restricted` | Tracking is restricted (e.g., due to parental controls). |
+| `denied` | The user denied tracking authorization. |
+| `authorized` | The user granted tracking authorization. |
 
 ## Requirements
 
@@ -95,8 +108,14 @@ final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
 
 ## Important Notice
 
-IOS does not allow to display multiple native dialogs. If you try to open a native dialog when there is already a dialog on screen, previous dialog will be forcefully closed by the system. It's very common to show notification permission dialog on the first run of an ios application. If you both try to show a notification permission dialog and app tracking request dialog, one of the each will be cancelled. One way to handle this is using an explainer dialog before requesting tracking authorization. Please check the sample project for more on this. I highly recommend this approach.
+iOS does not allow displaying multiple native dialogs simultaneously. If you attempt to show a native dialog while another is already on screen, the previous dialog will be forcefully closed by the system. It is very common to show a notification permission dialog on the first run of an iOS application. If you try to show both a notification permission dialog and an app tracking request dialog, one of them will be cancelled.
 
-Another way to get over this problem is postponing permission request until 2nd, or Nth run of the application. If you choose this way, please make sure that you inform app store reviewer that you postponed tracking request, or your submission may be rejected.
+**Recommended approach:** Use an explainer dialog before requesting tracking authorization. Check the sample project for more details.
 
-And finally; Always test on a real device with a fresh installed application.
+**Alternative approach:** Postpone the permission request until the 2nd or Nth run of the application. If you choose this way, make sure to inform the App Store reviewer that you postponed the tracking request, or your submission may be rejected.
+
+Always test on a real device with a freshly installed application.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
